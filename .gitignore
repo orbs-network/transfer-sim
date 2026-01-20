@@ -1,0 +1,30 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Build artifacts
+transfer-sim
+
+# Dependency directories
+vendor/
+
+# Solidity build artifacts
+*.bin
+*.bin-runtime
+*.abi
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
