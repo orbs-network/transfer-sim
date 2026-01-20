@@ -110,7 +110,7 @@ Simulates a token transfer to detect fee-on-transfer behavior.
 
 ## Requirements
 
-- Go 1.19 or later
+- Go 1.21 or later
 - Access to an Ethereum RPC endpoint
 - The `from` address must have:
   - Sufficient token balance
