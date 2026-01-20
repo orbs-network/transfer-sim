@@ -1,3 +1,29 @@
+// Package transfersim provides utilities for detecting fee-on-transfer tokens
+// using Ethereum state overrides to simulate transfers off-chain.
+//
+// The main function TransferSim uses geth's state override feature to
+// temporarily replace a destination address with a mock contract that
+// measures the actual amount of tokens received during a transferFrom call.
+// This allows detection of tokens that deduct fees during transfers without
+// requiring actual on-chain transactions.
+//
+// Example usage:
+//
+//	client, _ := ethclient.Dial("https://eth-mainnet.alchemyapi.io/v2/YOUR-API-KEY")
+//	token := common.HexToAddress("0x...")
+//	from := common.HexToAddress("0x...")
+//	to := common.HexToAddress("0x...")
+//	amount := big.NewInt(1000000000000000000) // 1 token
+//
+//	ratio, err := transfersim.TransferSim(client, token, from, to, amount)
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//
+//	// ratio == 1e18 means no fee, < 1e18 means fee detected
+//	if ratio.Cmp(big.NewInt(1e18)) < 0 {
+//	    fmt.Println("Fee on transfer detected")
+//	}
 package transfersim
 
 import (
