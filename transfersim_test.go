@@ -1,102 +1,68 @@
 package transfersim
 
 import (
+	"bytes"
+	"context"
+	"encoding/hex"
+	"errors"
+	"math/big"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-// TestTransferSimNoFee tests the scenario where there's no fee on transfer
-// This test requires a running Ethereum node or fork
-func TestTransferSimNoFee(t *testing.T) {
-	t.Skip("Skipping integration test - requires Ethereum node")
-	
-	// Example setup (uncomment when running against actual node):
-	// import "math/big"
-	// import "github.com/ethereum/go-ethereum/ethclient"
-	// client, err := ethclient.Dial("http://localhost:8545")
-	// if err != nil {
-	// 	t.Fatalf("Failed to connect to client: %v", err)
-	// }
-	// 
-	// token := common.HexToAddress("0x...") // Standard ERC20 token
-	// from := common.HexToAddress("0x...")
-	// to := common.HexToAddress("0x...")
-	// amount := big.NewInt(1000000)
-	// 
-	// ratio, err := TransferSim(client, token, from, to, amount)
-	// if err != nil {
-	// 	t.Fatalf("TransferSim failed: %v", err)
-	// }
-	// 
-	// expected := big.NewInt(1e18)
-	// if ratio.Cmp(expected) != 0 {
-	// 	t.Errorf("Expected ratio %s, got %s", expected.String(), ratio.String())
-	// }
-}
-
-// TestTransferSimWithFee tests the scenario where there's a fee on transfer
-func TestTransferSimWithFee(t *testing.T) {
-	t.Skip("Skipping integration test - requires Ethereum node")
-	
-	// Example setup for token with 1% fee:
-	// ratio should be approximately 0.99e18
-}
-
-// TestGetMockReceiverBytecode tests that the bytecode is not empty
-func TestGetMockReceiverBytecode(t *testing.T) {
-	bytecode := getMockReceiverBytecode()
-	
-	if len(bytecode) == 0 {
-		t.Error("Mock receiver bytecode is empty")
+// TestMockReceiverBytecode ensures the embedded bytecode is present.
+func TestMockReceiverBytecode(t *testing.T) {
+	if len(mockReceiverBytecode) == 0 {
+		t.Fatal("mock receiver bytecode is empty")
 	}
-	
-	// The bytecode should be a reasonable size (hundreds of bytes)
-	if len(bytecode) < 100 {
-		t.Errorf("Mock receiver bytecode seems too small: %d bytes", len(bytecode))
+	if len(mockReceiverBytecode) < 100 {
+		t.Fatalf("mock receiver bytecode too small: %d bytes", len(mockReceiverBytecode))
 	}
 }
 
-// TestOverrideAccountJSON tests the JSON serialization of OverrideAccount
-func TestOverrideAccountJSON(t *testing.T) {
-	code := []byte{0x60, 0x80, 0x60, 0x40}
-	hexCode := hexutil.Bytes(code)
-	
-	override := OverrideAccount{
-		Code: &hexCode,
+func TestBuildMockCallData(t *testing.T) {
+	token := common.HexToAddress("0x1111111111111111111111111111111111111111")
+	from := common.HexToAddress("0x2222222222222222222222222222222222222222")
+	amount := big.NewInt(0x1234)
+
+	got := buildMockCallData(token, from, amount)
+	if len(got) != 96 {
+		t.Fatalf("call data length = %d, want 96", len(got))
 	}
-	
-	// Verify the structure is correct
-	if override.Code == nil {
-		t.Error("Code should not be nil")
+
+	expectedHex := "" +
+		"0000000000000000000000001111111111111111111111111111111111111111" +
+		"0000000000000000000000002222222222222222222222222222222222222222" +
+		"0000000000000000000000000000000000000000000000000000000000001234"
+	expected, err := hex.DecodeString(expectedHex)
+	if err != nil {
+		t.Fatalf("decode expected hex: %v", err)
+	}
+
+	if !bytes.Equal(got, expected) {
+		t.Fatalf("call data mismatch\n got: %x\nwant: %x", got, expected)
 	}
 }
 
-// TestStateOverride tests the StateOverride map structure
-func TestStateOverride(t *testing.T) {
-	addr := common.HexToAddress("0x1234567890123456789012345678901234567890")
-	code := []byte{0x60, 0x80}
-	hexCode := hexutil.Bytes(code)
-	
-	override := StateOverride{
-		addr: OverrideAccount{
-			Code: &hexCode,
-		},
+func TestTransferSimErrorReturnsAmount(t *testing.T) {
+	orig := callWithStateOverride
+	t.Cleanup(func() { callWithStateOverride = orig })
+	callWithStateOverride = func(_ *ethclient.Client, _ context.Context, _ *common.Address, _ []byte, _ *big.Int, _ StateOverride) ([]byte, error) {
+		return nil, errors.New("boom")
 	}
-	
-	if len(override) != 1 {
-		t.Errorf("Expected 1 override, got %d", len(override))
-	}
-	
-	if override[addr].Code == nil {
-		t.Error("Code should not be nil")
-	}
-}
 
-// BenchmarkGetMockReceiverBytecode benchmarks the bytecode retrieval
-func BenchmarkGetMockReceiverBytecode(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = getMockReceiverBytecode()
+	token := common.HexToAddress("0x1111111111111111111111111111111111111111")
+	from := common.HexToAddress("0x2222222222222222222222222222222222222222")
+	to := common.HexToAddress("0x3333333333333333333333333333333333333333")
+	amount := big.NewInt(123)
+
+	got, err := TransferSim(nil, token, from, to, amount)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	if got == nil || got.Cmp(amount) != 0 {
+		t.Fatalf("got %v, want %s", got, amount.String())
 	}
 }
