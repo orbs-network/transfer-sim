@@ -105,10 +105,45 @@ func TransferSim(client *ethclient.Client, token, from, to common.Address, amoun
 // 3. Calls transferFrom(from, this, amount) on the token
 // 4. Gets its balance after transfer
 // 5. Returns the difference (actual received amount)
+//
+// The bytecode was compiled from the following Solidity code:
+//
+//	// SPDX-License-Identifier: MIT
+//	pragma solidity ^0.8.0;
+//
+//	interface IERC20 {
+//	    function balanceOf(address account) external view returns (uint256);
+//	    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+//	}
+//
+//	contract MockReceiver {
+//	    fallback() external {
+//	        address token;
+//	        address from;
+//	        uint256 amount;
+//
+//	        assembly {
+//	            token := calldataload(0)
+//	            from := calldataload(32)
+//	            amount := calldataload(64)
+//	        }
+//
+//	        uint256 balanceBefore = IERC20(token).balanceOf(address(this));
+//	        IERC20(token).transferFrom(from, address(this), amount);
+//	        uint256 balanceAfter = IERC20(token).balanceOf(address(this));
+//	        uint256 actualReceived = balanceAfter - balanceBefore;
+//
+//	        assembly {
+//	            mstore(0, actualReceived)
+//	            return(0, 32)
+//	        }
+//	    }
+//	}
+//
+// Compiled with: solc 0.8.33 with optimization enabled
+// Command: solcjs --bin --optimize MockReceiver.sol
 func getMockReceiverBytecode() []byte {
-	// This is the runtime bytecode compiled from MockReceiver.sol using solc 0.8.33
-	// The fallback function reads token, from, amount from calldata
-	// then executes the fee detection logic
+	// Runtime bytecode (deployed code)
 	bytecodeHex := "608060405234801561000f575f5ffd5b50604080516370a0823160e01b81523060048201525f80359260203592903591906001600160a01b038516906370a0823190602401602060405180830381865afa15801561005f573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610083919061017d565b6040516323b872dd60e01b81526001600160a01b03858116600483015230602483015260448201859052919250908516906323b872dd906064016020604051808303815f875af11580156100d9573d5f5f3e3d5ffd5b505050506040513d601f19601f820116820180604052508101906100fd9190610194565b506040516370a0823160e01b81523060048201525f906001600160a01b038616906370a0823190602401602060405180830381865afa158015610142573d5f5f3e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610166919061017d565b90505f61017383836101ba565b9050805f5260205ff35b5f6020828403121561018d575f5ffd5b5051919050565b5f602082840312156101a4575f5ffd5b815180151581146101b3575f5ffd5b9392505050565b818103818111156101d957634e487b7160e01b5f52601160045260245ffd5b9291505056fea26469706673582212204883c5e4b104bdfdfdb6fc0dafef3356b8ef02d5709f23c70b90c242773e33c064736f6c63430008210033"
 	
 	bytecode, _ := hex.DecodeString(bytecodeHex)
