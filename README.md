@@ -32,6 +32,33 @@ if received.Cmp(amount) == 0 {
 }
 ```
 
+## Node.js Usage
+
+The Go library is the canonical implementation. A Node.js translation is provided in `js/transfer-sim.js` for convenience.
+
+```js
+const Web3 = require("web3");
+const { transferSim } = require("./js/transfer-sim");
+
+const web3 = new Web3(process.env.RPC_URL);
+
+const token = "0x...";
+const from = "0x...";
+const to = "0x...";
+const amount = 10n ** 18n;
+
+(async () => {
+  const { received, error } = await transferSim(web3, token, from, to, amount);
+  if (error) {
+    console.warn("Simulation error:", error.message || error);
+  }
+  console.log("received:", received.toString());
+})();
+```
+
+- Requires `from` to approve `to` to spend `amount` on-chain.
+- Requires an RPC that supports `eth_call` with state overrides.
+
 ## 🧰 API
 
 ```go
