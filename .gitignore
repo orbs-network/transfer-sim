@@ -16,6 +16,7 @@ transfer-sim
 
 # Dependency directories
 vendor/
+node_modules/
 
 # Solidity build artifacts
 *.bin

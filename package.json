@@ -7,6 +7,14 @@
         "type": "git",
         "url": "https://github.com/orbs-network/transfer-sim.git"
     },
+    "scripts": {
+        "test:js": "node test/test.js",
+        "test:go": "go run ./test/test-go.go",
+        "test": "export TEST_TOKEN=0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d TEST_FROM=$OWNER TEST_TO=0x00002a9C4D9497df5Bd31768eC5d30eEf5405000 TEST_AMOUNT=123456789; npm run test:js && npm run test:go"
+    },
+    "dependencies": {
+        "web3": "^1.10.0"
+    },
     "main": "js/index.js",
     "exports": {
         ".": "./js/index.js"
