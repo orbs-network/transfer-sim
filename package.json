@@ -1,6 +1,6 @@
 {
     "name": "@orbs-network/transfer-sim",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Simulate ERC20 transfers via state overrides to detect fee-on-transfer tokens.",
     "license": "MIT",
     "repository": {
