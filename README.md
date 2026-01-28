@@ -77,5 +77,5 @@ func TransferSim(
 ## 🧪 Tests
 
 ```bash
-go test ./...
+npm run test
 ```
