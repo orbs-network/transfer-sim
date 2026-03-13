@@ -4,6 +4,7 @@ package transfersim
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -18,9 +19,24 @@ type overrideAccount struct {
 type stateOverride map[common.Address]overrideAccount
 
 // TransferSim simulates a transferFrom and returns the amount received by `to`
-// (balance delta). On RPC error it returns `amount` alongside the error.
+// (balance delta). On failure it returns `amount` alongside the error.
 // Requires `from` to have approved `to` to spend `amount`.
-func TransferSim(client *ethclient.Client, token, from, to common.Address, amount *big.Int) (*big.Int, error) {
+func TransferSim(client *ethclient.Client, token, from, to common.Address, amount *big.Int) (received *big.Int, err error) {
+	if amount == nil || amount.Sign() == 0 {
+		return big.NewInt(0), nil
+	}
+
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			received = new(big.Int).Set(amount)
+			if recoveredErr, ok := recovered.(error); ok {
+				err = fmt.Errorf("transfer simulation failed: %w", recoveredErr)
+				return
+			}
+			err = fmt.Errorf("transfer simulation failed: %v", recovered)
+		}
+	}()
+
 	callData := buildMockCallData(token, from, amount)
 	overrides := stateOverride{
 		to: {Code: mockReceiverBytecode},
