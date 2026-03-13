@@ -70,11 +70,16 @@ func TransferSim(
 ```
 
 - Returns the actual amount received by `to` (balance delta).
-- On RPC error, returns `amount` alongside the error.
+- If `amount` is `nil`/`0`, returns `0` without calling RPC.
+- On failure, returns `amount` alongside the error.
 - Requires `from` to approve `to` to spend `amount`.
 - Uses `eth_call` with state overrides (no on-chain tx).
 
 ## 🧪 Tests
+
+```bash
+npm run test:unit
+```
 
 ```bash
 npm run test

@@ -17,6 +17,10 @@ function ensureCallWithState(web3) {
 }
 
 async function transferSim(web3, token, from, to, amount, opts = {}) {
+  if (amount == null || amount.toString() === "0") {
+    return { received: 0n, error: null };
+  }
+
   try {
     ensureCallWithState(web3);
 
@@ -39,7 +43,7 @@ async function transferSim(web3, token, from, to, amount, opts = {}) {
     const decoded = web3.eth.abi.decodeParameter("uint256", result);
     return { received: BigInt(decoded), error: null };
   } catch (err) {
-    return { received: BigInt(amount), error: err };
+    return { received: amount, error: err };
   }
 }
 
