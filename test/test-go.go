@@ -11,9 +11,9 @@ import (
 )
 
 func main() {
-	rpcURL := os.Getenv("RPC_URL")
+	rpcURL := os.Getenv("ETH_RPC_URL")
 	if rpcURL == "" {
-		fmt.Println("missing RPC_URL")
+		fmt.Println("missing ETH_RPC_URL")
 		os.Exit(1)
 	}
 
