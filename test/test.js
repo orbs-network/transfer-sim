@@ -4,8 +4,8 @@ const Web3 = require("web3");
 const { transferSim } = require("../js/transfer-sim");
 
 async function main() {
-  const rpcUrl = process.env.RPC_URL;
-  if (!rpcUrl) throw new Error("missing RPC_URL");
+  const rpcUrl = process.env.ETH_RPC_URL;
+  if (!rpcUrl) throw new Error("missing ETH_RPC_URL");
 
   const web3 = new Web3(rpcUrl);
 

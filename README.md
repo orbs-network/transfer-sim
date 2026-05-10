@@ -40,7 +40,7 @@ The Go library is the canonical implementation. A Node.js translation is provide
 const Web3 = require("web3");
 const { transferSim } = require("./js/transfer-sim");
 
-const web3 = new Web3(process.env.RPC_URL);
+const web3 = new Web3(process.env.ETH_RPC_URL);
 
 const token = "0x...";
 const from = "0x...";
