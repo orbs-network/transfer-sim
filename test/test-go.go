@@ -11,36 +11,20 @@ import (
 )
 
 func main() {
-	rpcURL := os.Getenv("ETH_RPC_URL")
-	if rpcURL == "" {
-		fmt.Println("missing ETH_RPC_URL")
-		os.Exit(1)
-	}
-
-	client, err := ethclient.Dial(rpcURL)
+	client, err := ethclient.Dial(os.Getenv("ETH_RPC_URL"))
 	if err != nil {
 		fmt.Println("dial error:", err)
 		os.Exit(1)
 	}
 	defer client.Close()
 
-	tokenStr := os.Getenv("TEST_TOKEN")
-	fromStr := os.Getenv("ETH_FROM")
-	toStr := os.Getenv("TEST_TO")
-	amountStr := os.Getenv("TEST_AMOUNT")
-	if tokenStr == "" || fromStr == "" || toStr == "" || amountStr == "" {
-		fmt.Println("missing ETH_FROM or TEST_* env vars")
-		os.Exit(1)
-	}
-
+	const tokenStr = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+	const toStr = "0x00002a9C4D9497df5Bd31768eC5d30eEf5405000"
+	const amountValue = 123456789
 	token := common.HexToAddress(tokenStr)
-	from := common.HexToAddress(fromStr)
+	from := common.HexToAddress(os.Getenv("ETH_FROM"))
 	to := common.HexToAddress(toStr)
-	amount, ok := new(big.Int).SetString(amountStr, 10)
-	if !ok {
-		fmt.Println("invalid TEST_AMOUNT:", amountStr)
-		os.Exit(1)
-	}
+	amount := big.NewInt(amountValue)
 
 	received, callErr := transfersim.TransferSim(client, token, from, to, amount)
 

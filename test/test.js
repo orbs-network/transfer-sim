@@ -4,19 +4,12 @@ const Web3 = require("web3");
 const { transferSim } = require("../js/transfer-sim");
 
 async function main() {
-  const rpcUrl = process.env.ETH_RPC_URL;
-  if (!rpcUrl) throw new Error("missing ETH_RPC_URL");
+  const web3 = new Web3(process.env.ETH_RPC_URL);
+  const from = process.env.ETH_FROM;
 
-  const web3 = new Web3(rpcUrl);
-
-  const { TEST_TOKEN, ETH_FROM, TEST_TO, TEST_AMOUNT } = process.env;
-  if (!TEST_TOKEN || !ETH_FROM || !TEST_TO || !TEST_AMOUNT) {
-    throw new Error("missing ETH_FROM or TEST_* env vars");
-  }
-  const token = TEST_TOKEN;
-  const from = ETH_FROM;
-  const to = TEST_TO;
-  const amount = BigInt(TEST_AMOUNT);
+  const token = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d";
+  const to = "0x00002a9C4D9497df5Bd31768eC5d30eEf5405000";
+  const amount = 123456789n;
 
   const { received, error } = await transferSim(web3, token, from, to, amount);
 
