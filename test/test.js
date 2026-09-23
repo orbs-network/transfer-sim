@@ -9,12 +9,12 @@ async function main() {
 
   const web3 = new Web3(rpcUrl);
 
-  const { TEST_TOKEN, TEST_FROM, TEST_TO, TEST_AMOUNT } = process.env;
-  if (!TEST_TOKEN || !TEST_FROM || !TEST_TO || !TEST_AMOUNT) {
-    throw new Error("missing TEST_* env vars");
+  const { TEST_TOKEN, ETH_FROM, TEST_TO, TEST_AMOUNT } = process.env;
+  if (!TEST_TOKEN || !ETH_FROM || !TEST_TO || !TEST_AMOUNT) {
+    throw new Error("missing ETH_FROM or TEST_* env vars");
   }
   const token = TEST_TOKEN;
-  const from = TEST_FROM;
+  const from = ETH_FROM;
   const to = TEST_TO;
   const amount = BigInt(TEST_AMOUNT);
 
