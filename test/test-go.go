@@ -25,11 +25,11 @@ func main() {
 	defer client.Close()
 
 	tokenStr := os.Getenv("TEST_TOKEN")
-	fromStr := os.Getenv("TEST_FROM")
+	fromStr := os.Getenv("ETH_FROM")
 	toStr := os.Getenv("TEST_TO")
 	amountStr := os.Getenv("TEST_AMOUNT")
 	if tokenStr == "" || fromStr == "" || toStr == "" || amountStr == "" {
-		fmt.Println("missing TEST_* env vars")
+		fmt.Println("missing ETH_FROM or TEST_* env vars")
 		os.Exit(1)
 	}
 
