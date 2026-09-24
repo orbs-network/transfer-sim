@@ -78,9 +78,12 @@ func TransferSim(
 ## 🧪 Tests
 
 ```bash
-npm run test:unit
+npm test
 ```
 
-```bash
-npm run test
-```
+The JS and Go suites use deterministic RPC responses to verify calldata, state
+overrides, full and fee-deducted transfers, large amounts, reverts, and zero
+amounts. No wallet, chain setup, or external RPC is required. The mock responses
+test the client logic; they do not execute the receiver bytecode in an EVM.
+
+Run `npm run build` for JS syntax and Go compilation checks.
