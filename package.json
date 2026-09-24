@@ -8,12 +8,10 @@
         "url": "https://github.com/orbs-network/transfer-sim.git"
     },
     "scripts": {
-        "test:unit:js": "node --test test/transfer-sim.test.js",
-        "test:unit:go": "go test ./...",
-        "test:unit": "npm run test:unit:js && npm run test:unit:go",
-        "test:js": "node test/test.js",
-        "test:go": "go run ./test/test-go.go",
-        "test": "zsh -c 'chain bnb && npm run test:js && npm run test:go'"
+        "build": "node --check js/index.js && node --check js/transfer-sim.js && go build ./...",
+        "test:js": "node --test test/transfer-sim.test.js",
+        "test:go": "go test ./...",
+        "test": "npm run test:js && npm run test:go"
     },
     "dependencies": {
         "web3": "^1.10.0"
