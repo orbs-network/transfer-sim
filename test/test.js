@@ -16,6 +16,7 @@ async function main() {
   console.log("amount   :", amount.toString());
   console.log("received :", received.toString());
   console.log("error    :", error ? error.message || String(error) : "null");
+  if (error) process.exitCode = 1;
 }
 
 main().catch((err) => {
