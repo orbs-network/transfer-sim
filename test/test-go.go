@@ -36,6 +36,7 @@ func main() {
 	}
 	if callErr != nil {
 		fmt.Println("error    :", callErr)
+		os.Exit(1)
 	} else {
 		fmt.Println("error    :", "null")
 	}
