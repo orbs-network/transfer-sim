@@ -11,7 +11,8 @@
         "build": "node --check js/index.js && node --check js/transfer-sim.js && go build ./...",
         "test:js": "node --test test/transfer-sim.test.js",
         "test:go": "go test ./...",
-        "test": "npm run test:js && npm run test:go"
+        "test:e2e": "node --test test/e2e.test.js",
+        "test": "npm run test:js && npm run test:go && npm run test:e2e"
     },
     "dependencies": {
         "web3": "^1.10.0"
