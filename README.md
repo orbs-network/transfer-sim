@@ -81,9 +81,21 @@ func TransferSim(
 npm test
 ```
 
-The JS and Go suites use deterministic RPC responses to verify calldata, state
-overrides, full and fee-deducted transfers, large amounts, reverts, and zero
-amounts. No wallet, chain setup, or external RPC is required. The mock responses
-test the client logic; they do not execute the receiver bytecode in an EVM.
+Requires Node.js, Go, and Foundry (`forge` and `anvil`). Forge downloads Solidity
+0.8.21 on the first run if needed.
+
+The E2E suite starts a fresh local Anvil node, deploys a token fixture, and runs
+the same scenarios through both JS and Go over real JSON-RPC. It executes the
+receiver bytecode using state overrides and checks full transfers, 2.5% and 100%
+fees, large amounts, insufficient balances, and insufficient allowances. Every
+simulation must preserve the original balances, allowances, and receiver code.
+Scenarios are defined once in `test/e2e.test.js`; `test/runner` only adapts Go to
+that shared harness.
+
+Unit tests cover only cases outside E2E: zero amounts without RPC, JS transport
+errors, and Go panic recovery. No user wallet, external RPC, or live-chain funds
+are used. The local node and temporary build artifacts are cleaned up after testing.
+
+Run `npm run test:e2e` for E2E only.
 
 Run `npm run build` for JS syntax and Go compilation checks.
